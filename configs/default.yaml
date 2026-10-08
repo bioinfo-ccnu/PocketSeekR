@@ -1,0 +1,16 @@
+# Recommended conservative update: same chemical descriptor and geometry.
+# All five development folds chose region_budget=40, alpha=2, beta=0.25.
+# Conditional Top1/3/5 = 314/565/652; chemistry was previously fixed on all data.
+# No claim of independent testing; PDB-equal Top5 gain CI spans zero.
+center_chemical_weight: 0.0
+center_geometry_power: 1.0
+center_separation_A: 4.0
+chemical_weight: 2.0
+cooperation_radius_A: 1.5
+cooperation_weight: 0.5
+face_weight: 0.75
+growth_min_fraction: 0.5
+growth_radius_A: 6.0
+overlap_exponent: 0.25
+region_budget: 40
+saturation_scale: 1.0

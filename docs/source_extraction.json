@@ -1,0 +1,131 @@
+{
+  "pocket_calibration": {
+    "source_file": "src/riboposediff/pocket_calibration.py",
+    "source_sha256": "c87be9979bf25d5d945bea5482e03ab286a70f58cb608642d57dca2ce4c622d5",
+    "extracted_symbols": [
+      "SelectionCalibration",
+      "select_calibrated"
+    ]
+  },
+  "pocket_chemistry_calibration": {
+    "source_file": "src/riboposediff/pocket_chemistry_calibration.py",
+    "source_sha256": "d793f06a1f066da178a240ad31d5097b76e8fe6f144daf6ce7d9a81a3b76a7ae",
+    "extracted_symbols": [
+      "ChemicalRegionalSearch",
+      "ChemistryCalibration",
+      "bounded_fields",
+      "chemical_descriptor",
+      "detect_chemistry_pockets",
+      "representative_index"
+    ]
+  },
+  "pocket_directional": {
+    "source_file": "src/riboposediff/pocket_directional.py",
+    "source_sha256": "17e8ca9af318aa3bc76051c9e5dc41d7b072c21f5073dd7b06465dbf1f5e7ebf",
+    "extracted_symbols": [
+      "DIRECTIONAL_PROTOCOL",
+      "exposed_base_potential",
+      "line_visible"
+    ]
+  },
+  "pocket_generation": {
+    "source_file": "src/riboposediff/pocket_generation.py",
+    "source_sha256": "8bdf0fa84634db39d1230d735682e9e2e96d18b8f75f856b1024236705f681d7",
+    "extracted_symbols": [
+      "GenerationCalibration",
+      "RegionalPocketSearch",
+      "select_generation"
+    ]
+  },
+  "pocket_physics": {
+    "source_file": "src/riboposediff/pocket_physics.py",
+    "source_sha256": "c16b0f5aa40f8107e9fbb16ff9a6cb488a210cd8b063c7f076ae44a9f11c60a8",
+    "extracted_symbols": [
+      "Geometry",
+      "PROTOCOL",
+      "Ring",
+      "Site",
+      "_BASE",
+      "_PURINE",
+      "_PYRIMIDINE",
+      "_SUGAR",
+      "_angular_cos",
+      "_lone_pairs",
+      "_outward",
+      "_ring",
+      "_unit",
+      "rna_geometry"
+    ]
+  },
+  "pocket_region_chemistry": {
+    "source_file": "src/riboposediff/pocket_region_chemistry.py",
+    "source_sha256": "302ed8993b1092818a214e6f0c67b46d882289d4ef2c30b0f118c0ca17765684",
+    "extracted_symbols": [
+      "REGION_CHEMISTRY_PROTOCOL",
+      "regional_support_summary"
+    ]
+  },
+  "pocket_regions": {
+    "source_file": "src/riboposediff/pocket_regions.py",
+    "source_sha256": "f1597c0e9c063a3f241e676677419b7e86b1befdce1fd6c3712813ebede60a71",
+    "extracted_symbols": [
+      "REGION_PROTOCOL",
+      "face_neighbors",
+      "grow_regions",
+      "point_field",
+      "probe_segments_clear",
+      "scan_region_grid"
+    ]
+  },
+  "pocket_search": {
+    "source_file": "src/riboposediff/pocket_search.py",
+    "source_sha256": "21a278d8d3419d4c92e94981b57dbd529582a8339eb40343dee0671779742d2a",
+    "extracted_symbols": [
+      "_ray_hits",
+      "_rna_frame"
+    ]
+  },
+  "pocket_selection": {
+    "source_file": "src/riboposediff/pocket_selection.py",
+    "source_sha256": "3e61b67e758605fcbb9dd9474c881ae89769a4a229dc0fbc5b0c6e00618a656f",
+    "extracted_symbols": [
+      "select_pockets"
+    ]
+  },
+  "utils.chemistry": {
+    "source_file": "src/riboposediff/utils/chemistry.py",
+    "source_sha256": "724acdd8bff6db9c092675c5924e4ace765745ac4205581c816bdb86cfdcc19c",
+    "extracted_symbols": [
+      "BONDI_RADII"
+    ]
+  },
+  "utils.errors": {
+    "source_file": "src/riboposediff/utils/errors.py",
+    "source_sha256": "1570b7aa92b566e28c953c02586229fdd06139cc9d0084afe5b3dc2fdebf9bdb",
+    "extracted_symbols": [
+      "SampleValidationError"
+    ]
+  },
+  "utils.files": {
+    "source_file": "src/riboposediff/utils/files.py",
+    "source_sha256": "0f50bfd3e3c4c0793ba6ff49caaba31415f07d1e4a5e458c11fc9cc8187767ad",
+    "extracted_symbols": [
+      "sha256_file",
+      "write_json_atomic"
+    ]
+  },
+  "utils.io": {
+    "source_file": "src/riboposediff/utils/io.py",
+    "source_sha256": "2228b06b902f3a29f08f8ffd489d52e544d162398c963a4db85c2b34936bca42",
+    "extracted_symbols": [
+      "ParsedAtom",
+      "RNA_BASE_ATOMS",
+      "RNA_RESIDUES",
+      "_atom_radii",
+      "_element_radii",
+      "_extract_rna_atoms",
+      "_rna_atom_key",
+      "parse_pdb_atoms"
+    ]
+  }
+}

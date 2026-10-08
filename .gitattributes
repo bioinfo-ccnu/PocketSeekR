@@ -1,0 +1,2 @@
+# PDB is a fixed-width structural format with intentional trailing padding.
+*.pdb whitespace=-blank-at-eol

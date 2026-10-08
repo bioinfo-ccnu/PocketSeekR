@@ -1,0 +1,146 @@
+\documentclass[10pt,a4paper,fontset=fandol]{ctexart}
+\usepackage[margin=1.7cm]{geometry}
+\usepackage{fontspec,amsmath,amssymb,booktabs,array}
+\setmainfont{texgyretermes-regular.otf}[BoldFont=texgyretermes-bold.otf,ItalicFont=texgyretermes-italic.otf,BoldItalicFont=texgyretermes-bolditalic.otf]
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\pagestyle{empty}\renewcommand{\arraystretch}{1.18}
+\begin{document}
+{\large\bfseries 算法 1  RNA口袋识别主流程}
+
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.0cm}>{\raggedright\arraybackslash}p{15.9cm}@{}}\toprule
+\multicolumn{2}{@{}l@{}}{\textbf{输入与输出}}\\
+输入 & RNA观测重原子 $\mathcal{R}=\{(a_j,r_j,t_j)\}_{j=1}^{N}$；$a_j$为坐标，$r_j$为Bondi半径，$t_j$为原子及核苷酸身份。\\
+默认 & 网格 $\Delta=1.5$ Å；区域预算 $M=40$；输出预算 $k=5$；化学权重 $\alpha=2$；重叠指数 $\beta=0.25$。\\
+输出 & 有序口袋列表 $S$，$|S|\leq5$；各口袋包含中心、完整核苷酸裁剪集合、质量分数及选择增益。\\
+\midrule
+1 & \hspace*{0.0cm}读取选定结构模型中的支持RNA重原子，应用既定残基与altloc选择规则。\\
+2 & \hspace*{0.0cm}$\mathcal{P}\leftarrow\operatorname{GenerateRegions}(\mathcal{R},\Delta,M)$。参见算法2。\\
+3 & \hspace*{0.0cm}若 $\mathcal{P}=\varnothing$，返回空列表。\\
+4 & \hspace*{0.0cm}从RNA完整碱基环及局部键几何构建芳香面、供体与受体方向。\\
+5 & \hspace*{0.0cm}for 每个候选区域 $r\in\mathcal{P}$ do\\
+6 & \hspace*{0.35cm}$c(r)\leftarrow\operatorname{RegionalChemistry}(r,\mathcal{R})$。参见算法3。\\
+7 & \hspace*{0.35cm}$Q(r)\leftarrow G(r)\,[1+\alpha c(r)]$。\\
+8 & \hspace*{0.0cm}end for\\
+9 & \hspace*{0.0cm}$S\leftarrow\operatorname{JointSelect}(\mathcal{P},Q,k,\beta)$。参见算法4。\\
+10 & \hspace*{0.0cm}return $S$，顺序为逐轮选择顺序。\\
+\bottomrule\end{tabular}\par
+\vspace{4pt}
+{\small 方法范围：预测仅使用RNA结构；不输入配体坐标、位点标签或神经网络检查点。输出用于后续口袋裁剪与对接，本步骤不生成配体位姿。}
+
+
+{\small 数学组成：探针可通行的自由空间区域、区域化学场与局部交叉支持、质量和裁剪差异共同决定的贪心选择。}
+
+
+{\small 内部40区域是几何筛选后的最大候选池；最终5口袋是输出上限。候选不足时保留实际数量。}
+
+
+{\small 参数范围：这里给出当前默认设置。部分固定参数通过开发数据选择过；推理时不使用标签。化学分数是结构启发式，不是结合自由能。}
+
+
+\newpage
+{\large\bfseries 算法 2  几何区域生成与代表中心}
+
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.0cm}>{\raggedright\arraybackslash}p{15.9cm}@{}}\toprule
+\multicolumn{2}{@{}l@{}}{\textbf{输入与输出}}\\
+输入 & RNA $\mathcal{R}$；网格间距 $\Delta=1.5$ Å；预算 $M=40$。\\
+默认 & 净空1.2–4 Å；局部半径7.5 Å；生长半径6 Å；种子分数比例0.5；至少3体素；中心间距4 Å。\\
+输出 & 按几何质量排列的候选池 $\mathcal{P}$；每项记录区域体素、自由中心 $z_r$、分数 $G(r)$ 与裁剪集合 $A_r$。\\
+\midrule
+1 & \hspace*{0.0cm}以RNA坐标均值为原点；取最远原子方向为第一轴、最大横向投影为第二轴，以叉积构建第三轴。\\
+2 & \hspace*{0.0cm}在该框架构建网格；距离及编号并列时采用固定原子顺序。\\
+3 & \hspace*{0.0cm}for 每个网格点 $x_i$ do\\
+4 & \hspace*{0.35cm}在7.5 Å原子邻域计算 $d_i=\min_j(\|x_i-a_j\|-r_j)$；要求 $1.2\leq d_i\leq4$ Å且至少3个邻原子。\\
+5 & \hspace*{0.35cm}将RNA框架中 $\{-1,0,1\}^{3}$ 的26个非零向量归一化并发射射线；以 $r_j+1.2$ Å球计算遮挡比例 $E_i$ 与13对对向遮挡比例 $O_i$。\\
+6 & \hspace*{0.35cm}$w_{ij}=\exp[-(\|x_i-a_j\|-4)^2/8],\quad W_i=\sum_jw_{ij}$。\\
+7 & \hspace*{0.35cm}$b_i=\sum_jw_{ij}\,\mathbf{1}_{\mathrm{base}}(j)/W_i$。\\
+8 & \hspace*{0.35cm}$g_i=E_i\sqrt{O_i}\,(0.75+0.25b_i)\,[1-\exp(-W_i/12)]$。\\
+9 & \hspace*{0.35cm}保留 $g_i>0$ 且至少存在1对对向遮挡的合格体素。\\
+10 & \hspace*{0.0cm}end for\\
+11 & \hspace*{0.0cm}建立六面邻接；仅当整条连接线段不穿过探针扩展原子球时保留边。\\
+12 & \hspace*{0.0cm}按 $g_i$ 降序遍历尚未分配的种子，以广度优先生长构造区域。\\
+13 & \hspace*{0.35cm}只加入距种子不超过6 Å、且 $g_i\geq0.5g_{\mathrm{seed}}$ 的未分配邻点；丢弃少于3体素的区域。\\
+14 & \hspace*{0.0cm}for 每个保留区域 $r$ do\\
+15 & \hspace*{0.35cm}$V_r=|r|\Delta^3,\quad V_0=36\pi$ Å³。\\
+16 & \hspace*{0.35cm}$G(r)=\max_{i\in r}g_i\,[0.5+0.5(1-\exp(-V_r/V_0))]$。\\
+17 & \hspace*{0.35cm}$\mu_r=\sum_{i\in r}g_ix_i/\sum_{i\in r}g_i$；取区域内离 $\mu_r$ 最近的自由体素为 $z_r$。\\
+18 & \hspace*{0.0cm}end for\\
+19 & \hspace*{0.0cm}按 $G$ 降序检查中心间距4 Å；围绕中心作10 Å球形裁剪，并扩展到完整观测核苷酸。\\
+20 & \hspace*{0.0cm}要求至少12个RNA原子；与先前保留裁剪Jaccard重叠率≥0.8者排除；保留最多 $M$ 区域。\\
+21 & \hspace*{0.0cm}return $\mathcal{P}$。\\
+\bottomrule\end{tabular}\par
+\vspace{4pt}
+{\small 净空使用局部原子邻域；射线描述局部遮挡。区域体积是合格探针中心空间的网格体积。默认代表中心由几何决定，化学重定位权重为0。}
+
+
+\newpage
+{\large\bfseries 算法 3  区域化学与协同支持}
+
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.0cm}>{\raggedright\arraybackslash}p{15.9cm}@{}}\toprule
+\multicolumn{2}{@{}l@{}}{\textbf{输入与输出}}\\
+输入 & 候选区域体素 $\{x_i\}_{i\in r}$；完整RNA几何与中性化学类型。\\
+默认 & 截断7.5 Å；芳香面高度3.5 Å，纵向/横向宽度1/2 Å；极性距离3 Å，宽度1 Å；协同半径 $\rho=1.5$ Å。\\
+输出 & 有界区域化学支持 $c(r)\in[0,1]$。\\
+\midrule
+1 & \hspace*{0.0cm}拟合完整芳香碱基环平面，要求平面拟合RMS≤0.25 Å；由已观测键邻居确定供受体方向。缺失平面或方向的位点不参与。\\
+2 & \hspace*{0.0cm}for 每个区域体素 $x_i$ do\\
+3 & \hspace*{0.35cm}对截断范围内每个芳香环 $b$，令 $h_{ib}$ 为有符号法向高度、$\ell_{ib}$ 为横向距离。\\
+4 & \hspace*{0.35cm}从碱基平面沿对应法向2 Å处发射可见性线段；要求 $|h_{ib}|\geq2$ Å且整线段不被RNA原子球遮挡。\\
+5 & \hspace*{0.35cm}$U_i=\sum_{b\ \mathrm{visible}}\exp[-(|h_{ib}|-3.5)^2/2-\ell_{ib}^{2}/8]$。\\
+6 & \hspace*{0.35cm}对碱基供受体 $s$，计算距离 $d_{is}$ 与最佳允许方向余弦 $u_{is}$；应用同样的全线段遮挡检查。\\
+7 & \hspace*{0.35cm}$H_i=\sum_{s\ \mathrm{visible}}\max(0,u_{is})^2\exp[-(d_{is}-3)^2/2]$。\\
+8 & \hspace*{0.35cm}$F_i=1-\exp(-U_i),\quad P_i=1-\exp(-H_i)$。\\
+9 & \hspace*{0.0cm}end for\\
+10 & \hspace*{0.0cm}for 区域内点对 $(i,j)$ do\\
+11 & \hspace*{0.35cm}若 $i=j$，令 $\widetilde K_{ij}=1$。\\
+12 & \hspace*{0.35cm}否则仅当 $\|x_i-x_j\|\leq\rho$ 且整段容纳1.2 Å探针时，令 $\widetilde K_{ij}=\exp[-\|x_i-x_j\|^2/(2\rho^2)]$。\\
+13 & \hspace*{0.35cm}其余点对令 $\widetilde K_{ij}=0$。\\
+14 & \hspace*{0.0cm}end for；按行归一化 $K_{ij}=\widetilde K_{ij}/\sum_j\widetilde K_{ij}$。\\
+15 & \hspace*{0.0cm}$B_i=0.75F_i+0.25P_i$。\\
+16 & \hspace*{0.0cm}$C_i=\tfrac12[\sqrt{F_i(KP)_i}+\sqrt{P_i(KF)_i}]$。\\
+17 & \hspace*{0.0cm}$c(r)=0.5\,\mathrm{mean}_{i\in r}(B_i)+0.5\,\mathrm{mean}_{i\in r}(C_i)$。\\
+18 & \hspace*{0.0cm}return $c(r)$。\\
+\bottomrule\end{tabular}\par
+\vspace{4pt}
+{\small 所有距离以Å计。极性支持仅使用可解析的碱基供受体，排除糖和磷酸氧；点到供受体距离须大于原子半径加0.05 Å，可见性线段从该偏移表面起算。可见性使用原子范德华球，协同检查使用探针扩展球。}
+
+
+{\small 协同项衡量邻近芳香场与极性场的交叉支持；包含自身项。它不要求两类支持来自不同核苷酸，也不验证真实配体能够同时满足这些作用。}
+
+
+\newpage
+{\large\bfseries 算法 4  基于质量与裁剪差异的联合选择}
+
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.0cm}>{\raggedright\arraybackslash}p{15.9cm}@{}}\toprule
+\multicolumn{2}{@{}l@{}}{\textbf{输入与输出}}\\
+输入 & 候选池 $\mathcal{P}$；区域质量 $Q(r)$；中心 $z_r$；裁剪原子集合 $A_r$。\\
+默认 & 最终预算 $k=5$；重叠指数 $\beta=0.25$；硬排除Jaccard阈值0.8；中心距离阈值3 Å。\\
+输出 & 按贪心选择顺序排列的口袋列表 $S$。\\
+\midrule
+1 & \hspace*{0.0cm}$S\leftarrow[\ ],\quad\mathcal{U}\leftarrow\mathcal{P}$。\\
+2 & \hspace*{0.0cm}while $|S|<k$ 且 $\mathcal{U}\neq\varnothing$ do\\
+3 & \hspace*{0.35cm}$\mathcal{E}\leftarrow\varnothing$。\\
+4 & \hspace*{0.35cm}for 每个剩余候选 $r\in\mathcal{U}$ do\\
+5 & \hspace*{0.7cm}$J(r,s)=|A_r\cap A_s|/|A_r\cup A_s|$。\\
+6 & \hspace*{0.7cm}$J_{\max}(r,S)=\max_{s\in S}J(r,s)$；若 $S$ 为空，则定义为0。\\
+7 & \hspace*{0.7cm}若 $J_{\max}\geq0.8$，跳过 $r$。\\
+8 & \hspace*{0.7cm}若存在 $s\in S$ 满足 $\|z_r-z_s\|<3$ Å，跳过 $r$。\\
+9 & \hspace*{0.7cm}$\mathrm{gain}(r\mid S)=Q(r)[1-J_{\max}(r,S)]^{\beta}$。\\
+10 & \hspace*{0.7cm}将候选及其增益加入 $\mathcal{E}$。\\
+11 & \hspace*{0.35cm}end for\\
+12 & \hspace*{0.35cm}若 $\mathcal{E}=\varnothing$，结束循环。\\
+13 & \hspace*{0.35cm}选择增益最高的 $r^{*}$；增益按12位小数比较，同分按固定候选ID。\\
+14 & \hspace*{0.35cm}将 $r^{*}$ 追加至 $S$，记录增益与最大重叠，并从 $\mathcal{U}$ 移除。\\
+15 & \hspace*{0.0cm}end while\\
+16 & \hspace*{0.0cm}return $S$。\\
+\bottomrule\end{tabular}\par
+\vspace{4pt}
+{\small 首轮增益等于区域质量Q；后续候选因与已选裁剪区域重复而受到惩罚。Jaccard衡量RNA原子裁剪集合重叠，不是空腔体素集合重叠。}
+
+
+{\small 选择不足5个时返回实际结果；不添加新的中心。该过程是明确的贪心规则，不宣称全局最优或次模近似保证。}
+
+
+{\small 当前默认α=2表示区域化学支持的质量增益权重，β=0.25控制裁剪重叠惩罚强度。代表中心由几何确定；选择阶段改变入选顺序，不移动中心。}
+
+
+\end{document}

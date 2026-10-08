@@ -1,0 +1,46 @@
+{
+  "source_suite": {
+    "passed": 330
+  },
+  "prediction_comparison": [
+    {
+      "pdb": "1F1T",
+      "rna_atom_count": 716,
+      "region_count": 40,
+      "pocket_count": 5,
+      "exact_match": true,
+      "comparison_seconds": 1.048
+    },
+    {
+      "pdb": "1NTA",
+      "rna_atom_count": 842,
+      "region_count": 40,
+      "pocket_count": 5,
+      "exact_match": true,
+      "comparison_seconds": 0.83
+    },
+    {
+      "pdb": "2GDI",
+      "rna_atom_count": 3336,
+      "region_count": 40,
+      "pocket_count": 5,
+      "exact_match": true,
+      "comparison_seconds": 2.619
+    },
+    {
+      "pdb": "8K7W",
+      "rna_atom_count": 1053,
+      "region_count": 40,
+      "pocket_count": 5,
+      "exact_match": true,
+      "comparison_seconds": 0.898
+    }
+  ],
+  "unchanged_computational_definitions": 51,
+  "standalone_suite": {
+    "passed": 34,
+    "installed_wheel_tested": true
+  },
+  "default_detector_signature_matches_source": true,
+  "verified_on": "2026-10-08"
+}
