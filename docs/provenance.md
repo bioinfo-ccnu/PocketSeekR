@@ -2,7 +2,7 @@
 
 The standalone package was extracted on 2026-10-08 from the working tree of RiboPoseDiff. The source HEAD was `fad5008b2ca6b8fcb70d6d843de0d957a9e43241`, but the source working tree contained uncommitted changes; that commit alone does not identify the complete exported implementation.
 
-`source_extraction.json` identifies the exact source files using SHA256 and lists the extracted symbols. The computational definitions are copied verbatim, with only the package namespace/import dependency closure changed. The standalone `config.py` fixes the original default geometry. `stage_a.py` describes only the adopted regional detector, with a signature checked against the source default.
+`source_extraction.json` identifies the exact source files using SHA256 and lists the extracted symbols. In the initial 0.1 release, the computational definitions were copied verbatim, with only the package namespace/import dependency closure changed. The standalone `config.py` fixes the original default geometry. `stage_a.py` describes only the adopted regional detector, with a signature checked against the source default.
 
 The independent CLI/API are new wrappers. They use the same first-model PDB parser, occupancy/altloc selection, supported RNA residues, coordinate dtype, geometry, chemistry, crop rules, ranking and default calibration. No docking model, training loop, native ligand label pipeline or legacy prediction entry point is included.
 
@@ -15,3 +15,11 @@ Fixture sources: PDB entries [1F1T](https://www.rcsb.org/structure/1F1T) and [1N
 ## Extraction verification
 
 The source suite passed 330 tests, and the installed standalone wheel passed 34 tests. Full candidate pools and selected pockets match the source implementation exactly for 1F1T, 1NTA, 2GDI and 8K7W. All 51 extracted computational definitions have identical syntax trees to their source definitions, and the frozen detector signature matches the original default. This representative check does not substitute for a new independent benchmark. See [verification records](extraction_verification.json).
+
+## NumPy and browser release (0.2)
+
+Coordinate storage, stacking, van der Waals radius arrays and whole-nucleotide cropping now use NumPy instead of PyTorch. The parser retains float32 rounding; geometry still uses float64. Scoring, candidate generation, selection parameters and RNA chemical typing are unchanged. There is no separate browser approximation or trained model.
+
+The candidate pools and selected pockets again match the original Torch-based source exactly for 1F1T, 1NTA, 2GDI and 8K7W; see [NumPy verification](numpy_migration_verification.json). The original syntax-tree comparison above describes version 0.1, not the changed storage/cropping definitions in version 0.2.
+
+The browser bridge uses the public prediction API and exports RNA-only and selected crop coordinates. Real Chromium/Pyodide predictions for 1F1T and 1NTA match native reports with a relative/absolute tolerance of 1e-9; the observed maximum absolute numeric difference on macOS was 2.22e-16. Candidate identities, ordering, atom indices, exported PDB text and other non-numeric fields match exactly. See [browser verification](browser_verification.json). This verifies port consistency on representative structures, not general scientific accuracy or a new benchmark.

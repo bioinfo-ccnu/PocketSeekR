@@ -3,8 +3,6 @@
 import argparse
 from pathlib import Path
 
-import torch
-
 from .api import predict
 from .pocket_chemistry_calibration import ChemistryCalibration
 from .utils.files import sha256_file, write_json_atomic
@@ -20,7 +18,6 @@ def build_parser():
 
 def main(argv=None):
     args = build_parser().parse_args(argv)
-    torch.set_num_threads(1)
     settings = ChemistryCalibration.load(args.config) if args.config else ChemistryCalibration()
     report = predict(args.rna_pdb, settings)
     if args.config:

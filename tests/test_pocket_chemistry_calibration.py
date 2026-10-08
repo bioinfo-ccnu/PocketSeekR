@@ -3,7 +3,6 @@ from dataclasses import replace
 import numpy as np
 import pytest
 from scipy.sparse import eye
-import torch
 
 from pocketseekr.config import StageAConfig
 from pocketseekr.pocket_chemistry_calibration import (
@@ -68,7 +67,7 @@ def test_real_rna_reproduces_parent_and_default_descriptor(pdb_id):
     if not Path(path).exists():
         pytest.skip("local benchmark coordinates unavailable")
     atoms = _extract_rna_atoms(parse_pdb_atoms(path), path)
-    xyz = torch.stack([a.position for a in atoms])
+    xyz = np.stack([a.position for a in atoms])
     stage = StageAConfig()
     search = ChemicalRegionalSearch(atoms, xyz, stage)
     cfg = ChemistryCalibration(face_weight=0.5, cooperation_radius_A=3.0)

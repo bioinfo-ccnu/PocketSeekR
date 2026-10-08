@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 import pytest
-import torch
+import numpy as np
 import yaml
 
 from pocketseekr import predict
@@ -64,4 +64,4 @@ def test_parser_preserves_first_model_and_occupancy_selection(tmp_path):
     ])+'\n')
     atoms = parse_pdb_atoms(path)
     assert len(atoms) == 1
-    assert torch.equal(atoms[0].position, torch.tensor([2., 0., 0.]))
+    assert np.array_equal(atoms[0].position, np.array([2., 0., 0.]))

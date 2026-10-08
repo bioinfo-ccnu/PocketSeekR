@@ -12,7 +12,6 @@ import numpy as np
 
 from scipy.spatial import cKDTree
 
-import torch
 
 import yaml
 
@@ -76,8 +75,8 @@ class RegionalPocketSearch:
             )
         pocket_detector_config(stage)
         self.atoms, self.positions, self.stage = atoms, positions, stage
-        self.xyz = positions.detach().cpu().double().numpy()
-        self.radii = _atom_radii(atoms).double().numpy()
+        self.xyz = np.asarray(positions, dtype=np.float64)
+        self.radii = np.asarray(_atom_radii(atoms), dtype=np.float64)
         frame = _rna_frame(self.xyz)
         if frame is None:
             raise ValueError("regional search requires a noncollinear RNA frame")
@@ -199,18 +198,19 @@ class RegionalPocketSearch:
     def crop(self, candidate):
         key = candidate["region"]["center_voxel_id"]
         if key not in self.crop_cache:
-            center = torch.as_tensor(candidate["center"], dtype=self.positions.dtype)
-            inside = torch.linalg.norm(self.positions - center, dim=-1) <= 10.0
+            center = np.asarray(candidate["center"], dtype=self.positions.dtype)
+            delta = self.positions - center
+            inside = np.sqrt(np.sum(delta * delta, axis=-1)) <= 10.0
             residues = {
                 _rna_atom_key(a)[:3] for a, keep in zip(self.atoms, inside) if keep
             }
-            indices = torch.tensor(
+            indices = np.asarray(
                 [
                     i
                     for i, a in enumerate(self.atoms)
                     if _rna_atom_key(a)[:3] in residues
                 ],
-                dtype=torch.long,
+                dtype=np.int64,
             )
             self.crop_cache[key] = (center, indices)
         return self.crop_cache[key]

@@ -5,7 +5,6 @@ from itertools import product
 
 import numpy as np
 import pytest
-import torch
 
 from pocketseekr.config import StageAConfig
 from pocketseekr.pocket_directional import exposed_base_potential
@@ -19,10 +18,10 @@ from pocketseekr.utils.io import _extract_rna_atoms, parse_pdb_atoms
 
 @pytest.fixture
 def search(tmp_path):
-    xyz = torch.tensor(
-        [v for v in product([-1.0, 0, 1.0], repeat=3) if any(v)], dtype=torch.float64
+    xyz = np.array(
+        [v for v in product([-1.0, 0, 1.0], repeat=3) if any(v)], dtype=np.float64
     )
-    xyz = 5 * xyz / torch.linalg.norm(xyz, dim=1)[:, None]
+    xyz = 5 * xyz / np.linalg.norm(xyz, axis=1)[:, None]
     source = tmp_path / "shell.pdb"
     source.write_text(
         "\n".join(
@@ -36,7 +35,7 @@ def search(tmp_path):
     )
     atoms = _extract_rna_atoms(parse_pdb_atoms(source), source)
     stage = StageAConfig()
-    return RegionalPocketSearch(atoms, torch.stack([a.position for a in atoms]), stage)
+    return RegionalPocketSearch(atoms, np.stack([a.position for a in atoms]), stage)
 
 
 def test_spatial_chemical_screening_preserves_fields_and_site_order(search):

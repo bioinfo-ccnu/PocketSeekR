@@ -1,0 +1,30 @@
+{
+  "coordinate_dtype": "float32",
+  "geometry_dtype": "float64",
+  "comparison": [
+    {
+      "pdb": "1F1T",
+      "exact_match": true,
+      "region_count": 40,
+      "pocket_count": 5
+    },
+    {
+      "pdb": "1NTA",
+      "exact_match": true,
+      "region_count": 40,
+      "pocket_count": 5
+    },
+    {
+      "pdb": "2GDI",
+      "exact_match": true,
+      "region_count": 40,
+      "pocket_count": 5
+    },
+    {
+      "pdb": "8K7W",
+      "exact_match": true,
+      "region_count": 40,
+      "pocket_count": 5
+    }
+  ]
+}

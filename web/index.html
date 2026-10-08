@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Identify RNA ligand-binding pockets locally in your browser with PocketSeekR.">
+  <title>PocketSeekR · RNA pocket identification</title>
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./vendor/3Dmol-min.js"></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="PocketSeekR home"><span class="brand-mark">P<span>R</span></span>PocketSeekR</a>
+    <nav aria-label="Resources"><a href="https://github.com/bioinfo-ccnu/PocketSeekR">Source &amp; documentation ↗</a><a href="./algorithms.pdf">Algorithms ↗</a></nav>
+  </header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">RNA STRUCTURE → CANDIDATE BINDING POCKETS</p>
+      <h1>A closer look at where<br>small molecules could bind.</h1>
+      <p class="lede">Explore RNA pockets through geometry and regional chemical support.<br>Choose a structure. Compute locally. Inspect the ranked regions.</p>
+      <span class="privacy"><span class="dot"></span> Your structure stays on your device</span>
+    </section>
+
+    <section class="workbench" aria-label="Pocket identification workbench">
+      <aside class="input-panel">
+        <div class="section-heading"><span class="step">01</span><h2>Choose your RNA</h2></div>
+        <label class="file-zone" for="structure">
+          <svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true"><path d="M16 22V5m-6 6 6-6 6 6M6 21v6h20v-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <strong>Select a PDB file</strong><span>or drag it into this area</span>
+          <input id="structure" type="file" accept=".pdb" aria-label="Select RNA PDB file">
+        </label>
+        <p id="filename" class="filename">No structure selected</p>
+        <button id="example" class="text-button" type="button">Try an RNA example · 1F1T →</button>
+        <div class="divider"></div>
+        <h3>Adopted method</h3>
+        <dl class="settings"><div><dt>Input</dt><dd>RNA only</dd></div><div><dt>Region pool</dt><dd>Up to 40</dd></div><div><dt>Ranked pockets</dt><dd>Up to 5</dd></div><div><dt>RNA crop</dt><dd>10 Å · whole nucleotides</dd></div></dl>
+        <button id="run" class="primary" type="button" disabled>Identify pockets <span>↗</span></button>
+        <button id="cancel" class="cancel" type="button" hidden>Cancel calculation</button>
+        <div id="status-box" class="status-box" role="status" aria-live="polite"><span id="status">Choose a structure to begin.</span><span id="elapsed"></span></div>
+        <p class="input-note">PDB format · up to 20 MB · first structural model · supported RNA residues. The first calculation loads the numerical runtime; large structures can take longer.</p>
+      </aside>
+
+      <div class="visual-panel">
+        <div class="viewer-heading"><div><span class="eyebrow">STRUCTURE EXPLORER</span><h2 id="viewer-title">Your RNA, in context</h2></div><button id="reset-view" class="small-button" type="button" disabled>Reset view</button></div>
+        <div class="viewer-stage">
+          <div id="viewer" aria-label="Interactive RNA structure viewer"></div>
+          <div id="placeholder"><svg viewBox="0 0 100 100" width="90" height="90" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><path d="M30 15c50 15-10 55 40 70M70 15c-50 15 10 55-40 70"/><path d="m37 23 27 0m-23 14 18 0m-18 13 18 0m-18 13 18 0m-27 14 27 0"/></g></svg><strong>A structure waiting to be explored</strong><span>Run PocketSeekR to reveal the ranked pocket centers.</span></div>
+        </div>
+        <div class="viewer-footer"><span id="viewer-info">Rotate by dragging · scroll to zoom</span><span>Centers and RNA context crops</span></div>
+      </div>
+    </section>
+
+    <section id="results" class="results" hidden>
+      <div class="results-heading"><div><p class="eyebrow">02 · INSPECT THE PREDICTION</p><h2>Ranked pockets <span id="pocket-count"></span></h2></div><div class="download-actions"><button id="download-json" class="small-button" type="button">Download results JSON ↓</button><button id="download-rna" class="small-button" type="button">Download RNA PDB ↓</button></div></div>
+      <p id="results-note" class="results-note">Ranks balance regional quality and crop diversity. Select a pocket to highlight its RNA crop. Scores are structural heuristics, not confidence probabilities or binding energies.</p>
+      <div id="pocket-list" class="pocket-list"></div>
+      <div class="crop-toolbar"><span id="crop-info"></span><button id="download-crop" class="small-button" type="button" disabled>Download selected crop PDB ↓</button></div>
+    </section>
+
+    <section class="method-strip" aria-label="Method overview"><div><span>01</span><h3>Find accessible regions</h3><p>Probe-clear connected spaces and grooves around the RNA.</p></div><div><span>02</span><h3>Evaluate regional chemistry</h3><p>Aromatic-face, directional polar and local co-support fields.</p></div><div><span>03</span><h3>Select complementary pockets</h3><p>Regional quality balanced with RNA crop novelty.</p></div></section>
+    <footer><span>PocketSeekR · CCNU Bioinformatics</span><span>RNA-only · fixed heuristics · browser computation</span><a href="https://github.com/bioinfo-ccnu/PocketSeekR/blob/main/docs/benchmark.md">Evaluation scope ↗</a></footer>
+  </main>
+</body>
+</html>

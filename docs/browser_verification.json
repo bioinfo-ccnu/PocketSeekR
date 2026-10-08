@@ -1,0 +1,34 @@
+{
+  "browser": "154.0.8037.98",
+  "comparison_tolerance": 1e-09,
+  "maximum_absolute_numeric_error": 2.220446049250313e-16,
+  "comparisons": [
+    {
+      "pdb": "1F1T",
+      "regions": 40,
+      "pockets": 5,
+      "full_report_matches_native_with_tolerance": true,
+      "seconds": 6.896
+    },
+    {
+      "pdb": "1NTA",
+      "regions": 40,
+      "pockets": 5,
+      "full_report_matches_native_with_tolerance": true,
+      "seconds": 3.243
+    }
+  ],
+  "checks": [
+    "Pages subpath",
+    "cancel and rerun",
+    "real PDB upload",
+    "JSON export",
+    "crop export",
+    "3D viewer",
+    "mobile overflow",
+    "invalid RNA error",
+    "recovery after error",
+    "no candidate padding",
+    "all requests same-origin GET"
+  ]
+}

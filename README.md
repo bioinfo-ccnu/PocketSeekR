@@ -4,6 +4,14 @@
 
 PocketSeekR is a standalone, non-neural tool for identifying candidate ligand-binding pockets from an RNA structure. It takes observed RNA coordinates, searches probe-accessible free-space regions, evaluates regional chemical support, and selects up to five complementary pocket centers. No ligand coordinates or trained checkpoint are required.
 
+## Calculate online
+
+Open **[PocketSeekR on GitHub Pages](https://bioinfo-ccnu.github.io/PocketSeekR/)**, choose a local PDB file or try the 1F1T RNA example, then click **Identify pockets**. Inspect the ranked centers in the interactive RNA viewer and download the full JSON report, RNA-only PDB or selected RNA context crop.
+
+Calculation runs locally in a Web Worker using Pyodide. The website downloads its Python runtime and numerical libraries from the same Pages site; it does not upload your structure or send it to a computation service. No server, account or trained checkpoint is needed. The first calculation loads about 30 MB of static assets and depends on network speed; later calculations reuse the initialized worker. Cancel stops the worker, and running again initializes a new one.
+
+The browser accepts PDB files up to 20 MB and requires WebAssembly, module workers and WebGL. Only the first structural model is used, including for NMR ensembles. Larger structures may need more time and memory; use the Python CLI for inputs beyond the browser limit. Direct mmCIF input is not supported. The browser and CLI use the same prediction code and adopted settings.
+
 ## Install
 
 Python 3.10 or later is required. A CPU environment is sufficient.
@@ -16,7 +24,7 @@ source .venv/bin/activate
 python -m pip install -e .
 ```
 
-Dependencies are NumPy, SciPy, PyYAML and PyTorch. PyTorch currently provides coordinate tensors and cropping operations; it is not used to load a trained model. RDKit and the original docking/training dependencies are not required.
+Dependencies are NumPy, SciPy and PyYAML. PyTorch, RDKit and the original docking/training dependencies are not required.
 
 ## Identify pockets
 
@@ -37,7 +45,7 @@ Two reports are saved:
 - `pockets.json`: ordered final pockets with centers in Å, quality scores, selection gains, RNA crop atom identities, parameters and implementation hashes.
 - `candidates.json`: the internal candidate pool and selected pockets. Atom indices refer to the parsed RNA atom order, not PDB atom serial numbers.
 
-RNA crops use a 10 Å neighborhood expanded to complete observed nucleotides. They are context crops, not cavity boundaries. The CLI exports JSON; coordinate-file export and a browser viewer are not implemented in this release.
+RNA crops use a 10 Å neighborhood expanded to complete observed nucleotides. They are context crops, not cavity boundaries. The CLI exports JSON. The browser additionally exports RNA-only and crop PDB files with consecutive atom serial numbers; residue identities and observed coordinates are preserved.
 
 ## Python API
 
@@ -79,8 +87,8 @@ The source developmental comparison includes 940 ligand instances from 554 PDB e
 
 ## Deployment status
 
-This repository provides a local Python CLI and API. A GitHub Pages/Pyodide implementation is planned but is not included or deployed. A Pages website alone does not execute the current Python package.
+The static browser application is deployed through GitHub Actions to [GitHub Pages](https://bioinfo-ccnu.github.io/PocketSeekR/). Each publication first runs real Chromium/WASM predictions and compares reports with native Python. See [build, test and deployment instructions](docs/browser_deployment.md).
 
 ## Provenance
 
-PocketSeekR was extracted from the current RNA-only prediction path of [RiboPoseDiff](https://github.com/wangleiofficial/RiboPoseDiff). The extraction preserves computational function bodies, coordinate precision, ordering and default parameters while removing unrelated docking and training modules. See [the extraction manifest](docs/source_extraction.json) for the source-file hashes and selected symbols.
+PocketSeekR was extracted from the current RNA-only prediction path of [RiboPoseDiff](https://github.com/wangleiofficial/RiboPoseDiff). The original extraction preserved computational function bodies while removing unrelated docking and training modules. Version 0.2 replaces coordinate storage and cropping operations with NumPy to run the same core in native Python and WebAssembly, retaining float32 input coordinates, float64 geometry and adopted parameters. See [the extraction manifest](docs/source_extraction.json) for the source-file hashes and selected symbols.

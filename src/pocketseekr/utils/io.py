@@ -6,9 +6,7 @@ from dataclasses import dataclass
 
 from pathlib import Path
 
-import torch
-
-from torch import Tensor
+import numpy as np
 
 from .chemistry import BONDI_RADII
 
@@ -42,16 +40,16 @@ class ParsedAtom:
     residue_name: str
     chain_id: str
     residue_id: str
-    position: Tensor
+    position: np.ndarray
 
-def _element_radii(elements: list[str]) -> Tensor:
+def _element_radii(elements: list[str]) -> np.ndarray:
     radii = BONDI_RADII
     unsupported = {element.upper() for element in elements} - radii.keys()
     if unsupported:
         raise SampleValidationError(f"unsupported vdW elements: {sorted(unsupported)}")
-    return torch.tensor([radii[e.upper()] for e in elements])
+    return np.asarray([radii[e.upper()] for e in elements], dtype=np.float32)
 
-def _atom_radii(atoms: list[ParsedAtom]) -> Tensor:
+def _atom_radii(atoms: list[ParsedAtom]) -> np.ndarray:
     return _element_radii([atom.element for atom in atoms])
 
 def _rna_atom_key(atom: ParsedAtom) -> tuple[str, str, str, str]:
@@ -81,14 +79,16 @@ def parse_pdb_atoms(path: str | Path) -> list[ParsedAtom]:
             if element in {"H", "D"}:
                 continue
             try:
-                position = torch.tensor(
-                    [float(line[30:38]), float(line[38:46]), float(line[46:54])]
+                # Retain the source parser's float32 coordinate rounding.
+                position = np.asarray(
+                    [float(line[30:38]), float(line[38:46]), float(line[46:54])],
+                    dtype=np.float32,
                 )
             except ValueError as exc:
                 raise SampleValidationError(
                     f"invalid PDB coordinates in {path}: {line.rstrip()}"
                 ) from exc
-            if not torch.isfinite(position).all():
+            if not np.isfinite(position).all():
                 raise SampleValidationError(f"non-finite coordinates in {path}")
             atom = ParsedAtom(
                 record,

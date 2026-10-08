@@ -3,7 +3,7 @@
 from dataclasses import asdict
 from pathlib import Path
 
-import torch
+import numpy as np
 
 from .config import StageAConfig
 from .pocket_chemistry_calibration import ChemistryCalibration, detect_chemistry_pockets
@@ -22,7 +22,7 @@ def predict(rna_pdb: str | Path, settings: ChemistryCalibration | None = None) -
     source = Path(rna_pdb).resolve()
     settings = ChemistryCalibration() if settings is None else settings
     atoms = _extract_rna_atoms(parse_pdb_atoms(source), source)
-    xyz = torch.stack([atom.position for atom in atoms])
+    xyz = np.stack([atom.position for atom in atoms])
     stage = StageAConfig()
     result = detect_chemistry_pockets(atoms, xyz, stage, settings)
     pockets = [
