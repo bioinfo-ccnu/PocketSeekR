@@ -9,7 +9,7 @@ const {chromium} = require('playwright');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'outputs/browser-verification');
 const site = path.join(root, 'outputs/site');
-const mime = {'.html':'text/html', '.js':'text/javascript', '.mjs':'text/javascript', '.css':'text/css', '.wasm':'application/wasm'};
+const mime = {'.html':'text/html', '.js':'text/javascript', '.mjs':'text/javascript', '.css':'text/css', '.svg':'image/svg+xml', '.wasm':'application/wasm'};
 let maximumError = 0;
 function compare(actual, expected, key = '') {
   if (typeof expected === 'number') {
@@ -55,13 +55,15 @@ function compare(actual, expected, key = '') {
     page.on('pageerror', error => pageErrors.push(error.message));
     page.on('request', r => requests.push({url:r.url(),method:r.method()}));
     await page.goto(url);
-    await page.locator('#example').click();
+    await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
+    await page.locator('#nav-example').click();
     await page.waitForFunction(() => !document.getElementById('run').disabled);
     // A killed worker must not interfere with a subsequent calculation.
     await page.locator('#run').click();
     await page.locator('#cancel').click();
     assert.match(await page.locator('#status').textContent(), /cancelled/);
     assert.equal(await page.locator('#run').isEnabled(), true);
+    assert.equal(await page.locator('#nav-example').isEnabled(), true);
 
     const inputs = ['1F1T', '1NTA'];
     for (const entry of inputs) {
@@ -70,6 +72,7 @@ function compare(actual, expected, key = '') {
       await page.waitForFunction(() => !document.getElementById('run').disabled);
       const started = Date.now();
       await page.locator('#run').click();
+      assert.equal(await page.locator('#nav-example').isEnabled(), false);
       await page.waitForFunction(() => document.getElementById('cancel').hidden, null, {timeout:180000});
       assert.match(await page.locator('#status').textContent(), /^Completed/, `${entry}: ${await page.locator('#status').textContent()}`);
       const downloadEvent = page.waitForEvent('download');
@@ -95,8 +98,9 @@ function compare(actual, expected, key = '') {
       if (entry === '1F1T') await page.screenshot({path:path.join(output,'desktop.png'),fullPage:true});
     }
     await page.setViewportSize({width:390,height:844});
+    await page.waitForFunction(() => innerWidth === 390 && document.documentElement.scrollWidth === 390);
+    console.log('mobile layout:', await page.evaluate(() => ({viewport:innerWidth,document:document.documentElement.scrollWidth,body:document.body.scrollWidth})));
     await page.screenshot({path:path.join(output,'mobile.png'),fullPage:true});
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     await page.locator('#structure').setInputFiles({name:'empty.pdb',mimeType:'chemical/x-pdb',buffer:Buffer.from('END\n')});
     await page.waitForFunction(() => !document.getElementById('run').disabled);
     await page.locator('#run').click();

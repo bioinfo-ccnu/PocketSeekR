@@ -8,6 +8,10 @@ The static website uses an ES module Web Worker to initialize Pyodide, load NumP
 
 The generated site is approximately 30.2 MiB, including a 3D viewer, a real RNA-only example and the algorithm PDF. Runtime downloads occur when calculation starts, not on initial page load. Browser computation uses one worker; large RNAs can be expensive in memory and time. The browser input limit is 20 MB, and ordinary PDB export field limits also apply. NMR inputs use the first model, following the native parser.
 
+## Interface
+
+The page uses a compact scientific-tool layout with a blue navigation bar, RNA input fieldset, interactive structure viewer, instructions and download resources. Its visual style is inspired by [SigSegmenter](http://bioinfo.isyslab.info/sigsegmenter/); the RNA banner and all PocketSeekR text are specific to this tool. Navigation example buttons load the same RNA-only input without starting calculation automatically. Result-table buttons highlight the corresponding RNA crop; the table reports both regional quality and the diversity-adjusted selection gain.
+
 ## Local build and preview
 
 Run from the repository root with Python 3.10+:

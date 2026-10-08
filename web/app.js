@@ -13,6 +13,8 @@ function clearResults() {
   $('results').hidden = true;
   $('placeholder').hidden = false;
   $('reset-view').disabled = true;
+  $('viewer-title').textContent = 'RNA structure viewer';
+  $('viewer-info').textContent = 'Drag to rotate · scroll to zoom';
   if (viewer) { viewer.clear(); viewer.render(); }
 }
 
@@ -21,7 +23,7 @@ function setInput(text, name) {
   inputName = name;
   clearResults();
   $('filename').textContent = name;
-  $('viewer-title').textContent = 'Your RNA, in context';
+  $('viewer-title').textContent = 'RNA structure viewer';
   $('run').disabled = !text || loadingInput;
   $('elapsed').textContent = '';
   setStatus('Structure selected. Ready to identify pockets.');
@@ -30,7 +32,7 @@ function setInput(text, name) {
 function lockInput(loading) {
   loadingInput = loading;
   $('structure').disabled = busy || loading;
-  $('example').disabled = busy || loading;
+  document.querySelectorAll('[data-example]').forEach(button => { button.disabled = busy || loading; });
   $('run').disabled = busy || loading || !inputText;
 }
 
@@ -59,7 +61,7 @@ function finish() {
   clearInterval(timer);
   $('run').disabled = !inputText;
   $('structure').disabled = false;
-  $('example').disabled = false;
+  document.querySelectorAll('[data-example]').forEach(button => { button.disabled = false; });
   $('cancel').hidden = true;
 }
 
@@ -77,12 +79,13 @@ function stem() { return inputName.replace(/\.pdb$/i, '').replace(/[^a-zA-Z0-9_.
 function showPocket(index) {
   selected = index;
   const pocket = report.pockets[index];
-  viewer.setStyle({}, {cartoon: {color: '#aabdb6', opacity: .7}, stick: {radius: .08, color: '#b0c0bb', opacity: .4}});
+  viewer.setStyle({}, {cartoon: {color: '#aab6c3', opacity: .7}, stick: {radius: .08, color: '#b8c4d0', opacity: .4}});
   viewer.setStyle({serial: pocket.atom_indices.map((i) => i + 1)}, {stick: {radius: .18, color: colors[index]}, cartoon: {color: colors[index]}});
   viewer.render();
   document.querySelectorAll('.pocket-card').forEach((button, i) => {
     button.classList.toggle('active', i === index);
     button.setAttribute('aria-pressed', String(i === index));
+    button.closest('tr').classList.toggle('selected', i === index);
   });
   const residues = new Set(pocket.crop_atom_identities.map((a) => JSON.stringify([a.chain_id, a.residue_id, a.residue_name]))).size;
   $('crop-info').textContent = `Pocket ${pocket.rank} · ${residues} observed nucleotides · ${pocket.atom_indices.length} RNA atoms`;
@@ -98,7 +101,7 @@ function showResults(result) {
   viewer ??= globalThis.$3Dmol.createViewer($('viewer'), {backgroundColor: '#ffffff'});
   viewer.clear();
   viewer.addModel(result.rna_pdb, 'pdb');
-  viewer.setStyle({}, {cartoon: {color: '#aabdb6'}, stick: {radius: .1, color: '#aabdb6'}});
+  viewer.setStyle({}, {cartoon: {color: '#aab6c3'}, stick: {radius: .1, color: '#aab6c3'}});
   for (let i = 0; i < result.pockets.length; i++) {
     const [x, y, z] = result.pockets[i].center;
     viewer.addSphere({center: {x, y, z}, radius: .85, color: colors[i]});
@@ -117,17 +120,18 @@ function showResults(result) {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'pocket-card';
-    const header = document.createElement('header');
     const dot = document.createElement('span');
     dot.className = 'pocket-dot'; dot.style.background = colors[i];
-    header.append(dot, document.createTextNode(`Pocket ${pocket.rank}`));
-    const score = document.createElement('span'); score.className = 'pocket-score'; score.textContent = pocket.score.toFixed(3);
-    const label = document.createElement('small'); label.textContent = 'Regional quality';
-    const atoms = document.createElement('small'); atoms.textContent = `${pocket.atom_indices.length} RNA crop atoms`;
-    const center = document.createElement('small'); center.textContent = `Center: ${pocket.center.map((v) => v.toFixed(1)).join(', ')} Å`;
-    card.append(header, score, label, atoms, center);
+    card.append(dot, document.createTextNode(`Pocket ${pocket.rank}`));
     card.addEventListener('click', () => showPocket(i));
-    $('pocket-list').append(card);
+    const row = document.createElement('tr');
+    const choice = document.createElement('td');
+    choice.append(card); row.append(choice);
+    for (const value of [pocket.score.toFixed(3), pocket.selection_gain.toFixed(3),
+      pocket.center.map((v) => v.toFixed(2)).join(', '), String(pocket.atom_indices.length)]) {
+      const cell = document.createElement('td'); cell.textContent = value; row.append(cell);
+    }
+    $('pocket-list').append(row);
   }
   if (result.pockets.length) showPocket(0);
   else $('crop-info').textContent = 'No eligible pocket was found. The method does not create replacement candidates.';
@@ -164,20 +168,22 @@ const zone = document.querySelector('.file-zone');
 zone.addEventListener('dragover', (event) => { event.preventDefault(); if (!busy && !loadingInput) zone.classList.add('dragging'); });
 zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
 zone.addEventListener('drop', (event) => { event.preventDefault(); zone.classList.remove('dragging'); readFile(event.dataTransfer.files[0]); });
-$('example').addEventListener('click', async () => {
+async function loadExample() {
   if (busy || loadingInput) return;
   lockInput(true);
   try {
     const response = await fetch('./examples/1F1T_rna.pdb');
     if (!response.ok) throw new Error(`Example download failed (${response.status})`);
     setInput(await response.text(), '1F1T_rna.pdb');
+    $('submit').scrollIntoView({block: 'start'});
   } catch (error) { setStatus(error.message, 'error'); }
   finally { lockInput(false); }
-});
+}
+document.querySelectorAll('[data-example]').forEach(button => button.addEventListener('click', loadExample));
 $('run').addEventListener('click', () => {
   if (busy || loadingInput || !inputText) return;
   busy = true; clearResults(); requestId++;
-  $('run').disabled = true; $('structure').disabled = true; $('example').disabled = true; $('cancel').hidden = false;
+  lockInput(false); $('cancel').hidden = false;
   started = performance.now();
   const update = () => { $('elapsed').textContent = `Total elapsed: ${Math.floor((performance.now() - started) / 1000)} s`; };
   update(); timer = setInterval(update, 1000);

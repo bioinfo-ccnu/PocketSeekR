@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 76" fill="none">
+  <path d="M8 54c28-2 28-34 56-34s31 39 61 39 35-43 62-43 35 43 62 43 30-29 66-27" stroke="#8db0cd" stroke-width="3"/>
+  <path d="M8 48c28-2 28-34 56-34s31 39 61 39 35-43 62-43 35 43 62 43 30-29 66-27" stroke="#24527a" stroke-width="3"/>
+  <g stroke="#8db0cd" stroke-width="1.5"><path d="m36 39 0 6m13-24 0 6m15-12 0 6m16 0 0 6m16 10 0 6m16 8 0 6m15-6 0 6m16-8 0 6m15-25 0 6m16-17 0 6m16-12 0 6m16 0 0 6m15 9 0 6m16 12 0 6m16 4 0 6m15-13 0 6m18-17 0 6m17-10 0 6"/></g>
+  <g stroke="#1f5f99"><circle cx="125" cy="43" r="17" fill="#d8e9f7" fill-opacity=".3" stroke-dasharray="3 3"/><circle cx="187" cy="25" r="17" fill="#d8e9f7" fill-opacity=".3" stroke-dasharray="3 3"/></g>
+  <g fill="#24527a"><circle cx="125" cy="43" r="3"/><circle cx="187" cy="25" r="3"/></g>
+  <text x="109" y="74" fill="#536a80" font-family="Arial, Helvetica, sans-serif" font-size="9">RNA structure</text>
+  <path d="M174 70h18" stroke="#8db0cd"/>
+  <text x="198" y="74" fill="#536a80" font-family="Arial, Helvetica, sans-serif" font-size="9">candidate regions</text>
+</svg>

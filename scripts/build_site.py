@@ -30,7 +30,7 @@ def build(output, cache):
     manifest = json.loads((ROOT/'web/runtime-lock.json').read_text())
     output.mkdir(parents=True, exist_ok=True)
     cache.mkdir(parents=True, exist_ok=True)
-    for name in ['index.html', 'style.css', 'app.js', 'worker.js']:
+    for name in ['index.html', 'style.css', 'app.js', 'worker.js', 'header-banner.svg', 'favicon.svg']:
         shutil.copy2(ROOT/'web'/name, output/name)
     (output/'.nojekyll').write_text('')
     runtime = output/'runtime'
