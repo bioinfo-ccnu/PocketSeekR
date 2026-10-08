@@ -28,7 +28,7 @@ function compare(actual, expected, key = '') {
 
 (async () => {
   await fs.mkdir(output, {recursive:true});
-  let server, browser;
+  let server, browser, page;
   const pageErrors = [], requests = [], verification = [];
   try {
     let url = process.env.SITE_URL;
@@ -51,7 +51,7 @@ function compare(actual, expected, key = '') {
     browser = await chromium.launch({headless:true,
       ...(process.env.CHROME_PATH ? {executablePath:process.env.CHROME_PATH} : {}),
       args:['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']});
-    const page = await browser.newPage({viewport:{width:1440,height:1100}, acceptDownloads:true});
+    page = await browser.newPage({viewport:{width:1440,height:1100}, acceptDownloads:true});
     page.on('pageerror', error => pageErrors.push(error.message));
     page.on('request', r => requests.push({url:r.url(),method:r.method()}));
     await page.goto(url);
@@ -70,7 +70,7 @@ function compare(actual, expected, key = '') {
       await page.waitForFunction(() => !document.getElementById('run').disabled);
       const started = Date.now();
       await page.locator('#run').click();
-      await page.waitForFunction(() => document.getElementById('cancel').hidden, {timeout:180000});
+      await page.waitForFunction(() => document.getElementById('cancel').hidden, null, {timeout:180000});
       assert.match(await page.locator('#status').textContent(), /^Completed/, `${entry}: ${await page.locator('#status').textContent()}`);
       const downloadEvent = page.waitForEvent('download');
       await page.locator('#download-json').click();
@@ -100,14 +100,14 @@ function compare(actual, expected, key = '') {
     await page.locator('#structure').setInputFiles({name:'empty.pdb',mimeType:'chemical/x-pdb',buffer:Buffer.from('END\n')});
     await page.waitForFunction(() => !document.getElementById('run').disabled);
     await page.locator('#run').click();
-    await page.waitForFunction(() => document.getElementById('cancel').hidden, {timeout:180000});
+    await page.waitForFunction(() => document.getElementById('cancel').hidden, null, {timeout:180000});
     assert.match(await page.locator('#status').textContent(), /no RNA atoms/);
     assert.equal(await page.locator('#results').isVisible(), false);
     // Errors restart the runtime cleanly; one eligible pocket is not padded to five.
     await page.locator('#structure').setInputFiles(path.join(root,'examples/synthetic_shell.pdb'));
     await page.waitForFunction(() => !document.getElementById('run').disabled);
     await page.locator('#run').click();
-    await page.waitForFunction(() => document.getElementById('cancel').hidden, {timeout:180000});
+    await page.waitForFunction(() => document.getElementById('cancel').hidden, null, {timeout:180000});
     assert.match(await page.locator('#status').textContent(), /^Completed/);
     assert.equal(await page.locator('.pocket-card').count(), 1);
     assert.deepEqual(pageErrors, []);
@@ -116,6 +116,12 @@ function compare(actual, expected, key = '') {
       comparisons:verification, checks:['Pages subpath','cancel and rerun','real PDB upload','JSON export','crop export','3D viewer','mobile overflow','invalid RNA error','recovery after error','no candidate padding','all requests same-origin GET']};
     await fs.writeFile(path.join(output,'summary.json'), JSON.stringify(record,null,2)+'\n');
     console.log(JSON.stringify(record,null,2));
+  } catch (error) {
+    if (page) {
+      console.error('UI status:', await page.locator('#status').textContent());
+      await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});
+    }
+    throw error;
   } finally {
     if (browser) await browser.close();
     if (server) await new Promise(resolve => server.close(resolve));
