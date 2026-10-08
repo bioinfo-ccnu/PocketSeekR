@@ -39,7 +39,7 @@ The test serves the artifact under `/PocketSeekR/`, exercises upload, cancellati
 
 ## Publication
 
-The Pages workflow builds and tests on pull requests but publishes only from `main` or a manual workflow run. The repository's Pages source is **GitHub Actions**. The build job produces the static artifact after browser verification; the deploy job uses the `github-pages` environment with Pages write and OIDC permissions. See `.github/workflows/pages.yml`.
+The Pages workflow builds and tests on pull requests but publishes only from `main` or a manual workflow run. The repository's Pages source is **GitHub Actions**. The build job produces the static artifact after browser verification; the deploy job uses the `github-pages` environment with Pages write and OIDC permissions. A final job runs the same browser checks against the published HTTPS URL, including real structure calculations and exports. See `.github/workflows/pages.yml`.
 
 Changes to the Python package and web source are deployed together. Numerical behavior changes must update verification records and document their scientific implications. This deployment does not introduce a new benchmark or change the method's developmental evaluation scope.
 
