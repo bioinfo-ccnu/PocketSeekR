@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.png binary
+*.pdf binary
+# PDB records retain their fixed-width padding.
+*.pdb -whitespace

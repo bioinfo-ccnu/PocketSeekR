@@ -1,0 +1,131 @@
+{
+  "pocket_calibration": {
+    "source_file": "src/riboposediff/pocket_calibration.py",
+    "source_sha256": "c87be9979bf25d5d945bea5482e03ab286a70f58cb608642d57dca2ce4c622d5",
+    "extracted_symbols": [
+      "SelectionCalibration",
+      "select_calibrated"
+    ]
+  },
+  "pocket_chemistry_calibration": {
+    "source_file": "src/riboposediff/pocket_chemistry_calibration.py",
+    "source_sha256": "d793f06a1f066da178a240ad31d5097b76e8fe6f144daf6ce7d9a81a3b76a7ae",
+    "extracted_symbols": [
+      "ChemicalRegionalSearch",
+      "ChemistryCalibration",
+      "bounded_fields",
+      "chemical_descriptor",
+      "detect_chemistry_pockets",
+      "representative_index"
+    ]
+  },
+  "pocket_directional": {
+    "source_file": "src/riboposediff/pocket_directional.py",
+    "source_sha256": "a05b2f4344da7dc0d1ea6675e5021a7e0671823a0d88d04b68be7893dea37286",
+    "extracted_symbols": [
+      "DIRECTIONAL_PROTOCOL",
+      "exposed_base_potential",
+      "line_visible"
+    ]
+  },
+  "pocket_generation": {
+    "source_file": "src/riboposediff/pocket_generation.py",
+    "source_sha256": "cf0a9e22dbe0021c02caf36b7ce38c524c2f84fafd8ae80237985de02ac1db39",
+    "extracted_symbols": [
+      "GenerationCalibration",
+      "RegionalPocketSearch",
+      "select_generation"
+    ]
+  },
+  "pocket_region_chemistry": {
+    "source_file": "src/riboposediff/pocket_region_chemistry.py",
+    "source_sha256": "302ed8993b1092818a214e6f0c67b46d882289d4ef2c30b0f118c0ca17765684",
+    "extracted_symbols": [
+      "REGION_CHEMISTRY_PROTOCOL",
+      "regional_support_summary"
+    ]
+  },
+  "pocket_regions": {
+    "source_file": "src/riboposediff/pocket_regions.py",
+    "source_sha256": "f1597c0e9c063a3f241e676677419b7e86b1befdce1fd6c3712813ebede60a71",
+    "extracted_symbols": [
+      "REGION_PROTOCOL",
+      "face_neighbors",
+      "grow_regions",
+      "point_field",
+      "probe_segments_clear",
+      "scan_region_grid"
+    ]
+  },
+  "pocket_search": {
+    "source_file": "src/riboposediff/pocket_search.py",
+    "source_sha256": "a135eaf7c97f416ab7511b96db906983a5cca9f794a734862e01dabbd0ff65d4",
+    "extracted_symbols": [
+      "_ray_hits",
+      "_rna_frame"
+    ]
+  },
+  "pocket_selection": {
+    "source_file": "src/riboposediff/pocket_selection.py",
+    "source_sha256": "3e61b67e758605fcbb9dd9474c881ae89769a4a229dc0fbc5b0c6e00618a656f",
+    "extracted_symbols": [
+      "select_pockets"
+    ]
+  },
+  "rna_geometry": {
+    "source_file": "src/riboposediff/rna_geometry.py",
+    "source_sha256": "b94fcd32a52950fe1a77d8ffcf1ad8e685ba5af065bb143f2aa23f9fc93297f5",
+    "extracted_symbols": [
+      "Geometry",
+      "RING_PLANARITY_RMS_MAX_A",
+      "Ring",
+      "Site",
+      "_BASE",
+      "_PURINE",
+      "_PYRIMIDINE",
+      "_SUGAR",
+      "_angular_cos",
+      "_lone_pairs",
+      "_outward",
+      "_ring",
+      "_unit",
+      "rna_geometry"
+    ]
+  },
+  "utils.chemistry": {
+    "source_file": "src/riboposediff/utils/chemistry.py",
+    "source_sha256": "28d7748c0212092ef60c7902a08a38352eb1612125370ef720a272cccd402a64",
+    "extracted_symbols": [
+      "BONDI_RADII"
+    ]
+  },
+  "utils.errors": {
+    "source_file": "src/riboposediff/utils/errors.py",
+    "source_sha256": "1570b7aa92b566e28c953c02586229fdd06139cc9d0084afe5b3dc2fdebf9bdb",
+    "extracted_symbols": [
+      "SampleValidationError"
+    ]
+  },
+  "utils.files": {
+    "source_file": "src/riboposediff/utils/files.py",
+    "source_sha256": "0f50bfd3e3c4c0793ba6ff49caaba31415f07d1e4a5e458c11fc9cc8187767ad",
+    "extracted_symbols": [
+      "sha256_file",
+      "write_json_atomic"
+    ]
+  },
+  "utils.io": {
+    "source_file": "src/riboposediff/utils/io.py",
+    "source_sha256": "76bb5d89a187ccf0445005170321306f7d47ec930d35d9291b31cf2b3b78e32b",
+    "extracted_symbols": [
+      "ParsedAtom",
+      "RNA_BASE_ATOMS",
+      "RNA_RESIDUES",
+      "_atom_radii",
+      "_element_radii",
+      "_extract_rna_atoms",
+      "_rna_atom_key",
+      "parse_pdb_atoms"
+    ]
+  }
+}

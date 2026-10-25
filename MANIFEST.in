@@ -1,0 +1,6 @@
+include README.md README.zh-CN.md
+recursive-include configs *.yaml
+recursive-include docs *.md *.json
+recursive-include examples *.pdb *.md
+recursive-include tests *.py *.pdb
+global-exclude __pycache__ *.py[cod] .DS_Store

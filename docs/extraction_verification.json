@@ -1,0 +1,40 @@
+{
+  "verified_on": "2026-10-25",
+  "source_commit": "26d6c5715b6792726b792dbe962f08044b724021",
+  "unchanged_computational_definitions": 40,
+  "default_detector_signature_matches_source": true,
+  "prediction_comparison": [
+    {
+      "pdb": "1F1T",
+      "rna_atom_count": 716,
+      "region_count": 40,
+      "pocket_count": 5,
+      "exact_match": true,
+      "comparison_seconds": 0.837
+    },
+    {
+      "pdb": "1NTA",
+      "rna_atom_count": 842,
+      "region_count": 40,
+      "pocket_count": 5,
+      "exact_match": true,
+      "comparison_seconds": 1.381
+    },
+    {
+      "pdb": "2GDI",
+      "rna_atom_count": 3336,
+      "region_count": 40,
+      "pocket_count": 5,
+      "exact_match": true,
+      "comparison_seconds": 2.816
+    },
+    {
+      "pdb": "8K7W",
+      "rna_atom_count": 1053,
+      "region_count": 40,
+      "pocket_count": 5,
+      "exact_match": true,
+      "comparison_seconds": 0.957
+    }
+  ]
+}
